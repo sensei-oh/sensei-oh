@@ -55,10 +55,9 @@ THEMES = {
         "metric_blue": "#7aa2f7",     # Ice-blue telemetry numbers
         "accent_orange": "#d0952f",   # Burnt-orange micro-accents ('01 //' & 'LIVE' bar)
         "loc_add": "#4ade80",         # Additions green
-        "matrix_bg": "#000000",       # LED matrix housing background
         "matrix_blue": "#5882b8",     # Steel-blue 'J' LEDs
         "matrix_pink": "#cf7f96",     # Dusty rose-pink 'S' LEDs
-        "matrix_off": "#181818",      # Inactive LED dot fill
+        "matrix_off": "#1c1c1c",      # Subtle inactive LED dot fill on #0c0c0c header
         "text_primary": "#e6e8ec",    # Crisp off-white values
         "text_muted": "#737373",      # Neutral slate uppercase field labels
     },
@@ -73,10 +72,9 @@ THEMES = {
         "metric_blue": "#3a6fb0",     # Deep steel-blue telemetry numbers
         "accent_orange": "#b87b1e",   # Rich amber-ochre micro-accents ('01 //' & 'LIVE' bar)
         "loc_add": "#1a7f37",         # GitHub light additions green
-        "matrix_bg": "#eef1f5",       # Light LED matrix housing background
         "matrix_blue": "#4a72a8",     # Steel-blue 'J' LEDs
         "matrix_pink": "#b85d78",     # Dusty rose-pink 'S' LEDs
-        "matrix_off": "#dce2ea",      # Inactive LED dot fill
+        "matrix_off": "#e5e9f0",      # Subtle inactive LED dot fill on #ffffff header
         "text_primary": "#1f2328",    # Deep charcoal ink values
         "text_muted": "#656d76",      # Muted slate uppercase field labels
     },
@@ -253,7 +251,7 @@ def fetch_github_stats() -> dict:
 
 
 # ==============================================================================
-# SVG COMPONENT BUILDERS
+# SVG COMPONENT BUILDERS (zeofr/zeofr 985x530 Canvas Dimensions)
 # ==============================================================================
 
 def corner_brackets(x: int, y: int, w: int, h: int, color: str, size: int = 8) -> str:
@@ -266,7 +264,7 @@ def corner_brackets(x: int, y: int, w: int, h: int, color: str, size: int = 8) -
     )
 
 
-def build_js_dot_matrix(t: dict, origin_x: int = 854, origin_y: int = 19) -> str:
+def build_js_dot_matrix(t: dict, origin_x: int = 880, origin_y: int = 20) -> str:
     j_dots = {
         (0, 3), (0, 4), (0, 5), (0, 6),
         (1, 5), (1, 6),
@@ -285,14 +283,13 @@ def build_js_dot_matrix(t: dict, origin_x: int = 854, origin_y: int = 19) -> str
         (5, 12), (5, 13),
         (6, 8), (6, 9), (6, 10), (6, 11), (6, 12),
     }
-    circles = [
-        f'<rect x="{origin_x - 6}" y="{origin_y - 4}" width="84" height="36" rx="2" fill="{t["matrix_bg"]}" stroke="{t["hairline_color"]}" stroke-width="1"/>'
-    ]
-    step = 4.8
+    circles = []
+    step_x = 4.8
+    step_y = 4.4
     for r in range(7):
         for c in range(15):
-            cx = origin_x + c * step + 2.4
-            cy = origin_y + r * step + 2.4
+            cx = origin_x + c * step_x + 2.4
+            cy = origin_y + r * step_y
             if (r, c) in j_dots:
                 fill = t["matrix_blue"]
             elif (r, c) in s_dots:
@@ -318,13 +315,14 @@ def build_svg(uptime_str: str, stats: dict, disc_uri: str, theme_name: str) -> s
     focus_str = " · ".join(FOCUS_TAGS)
     personal_str = " · ".join(PERSONAL_TAGS)
 
+    # Strict 1:1 square viewport (398x398) centered inside the right bezel stage (x=520..969, y=64..476)
     disc_layer = (
-        f'<image href="{disc_uri}" x="523" y="72" width="406" height="406" preserveAspectRatio="xMidYMid meet"/>'
+        f'<image href="{disc_uri}" x="545" y="71" width="398" height="398" preserveAspectRatio="xMidYMid meet"/>'
         if disc_uri
-        else f'<text x="726" y="278" class="mono" fill="{t["text_muted"]}" font-size="13" text-anchor="middle">[ PLACE disc.png IN ROOT ]</text>'
+        else f'<text x="744" y="274" class="mono" fill="{t["text_muted"]}" font-size="13" text-anchor="middle">[ PLACE disc.png IN ROOT ]</text>'
     )
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="960" height="540" viewBox="0 0 960 540" fill="none">
+    return f"""<svg xmlns="http://www.w3.org/2000/svg" width="985" height="530" viewBox="0 0 985 530" fill="none">
   <defs>
     <style>
       .mono {{ font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', Consolas, monospace; }}
@@ -338,82 +336,82 @@ def build_svg(uptime_str: str, stats: dict, disc_uri: str, theme_name: str) -> s
     </pattern>
   </defs>
 
-  <!-- Outer Canvas -->
-  <rect width="960" height="540" fill="{t["canvas_bg"]}"/>
+  <!-- Outer Canvas (zeofr/zeofr 985x530) -->
+  <rect width="985" height="530" fill="{t["canvas_bg"]}"/>
 
   <!-- ==================== 1. TOP STATUS HEADER ==================== -->
-  <rect x="16" y="12" width="928" height="44" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  {corner_brackets(16, 12, 928, 44, t["bracket_color"], 7)}
-  <text x="30" y="39" class="mono" font-size="15.5" font-weight="700">
+  <rect x="16" y="11" width="953" height="44" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  {corner_brackets(16, 11, 953, 44, t["bracket_color"], 7)}
+  <text x="30" y="38" class="mono" font-size="15.5" font-weight="700">
     <tspan fill="{t["accent_orange"]}">{esc(NODE_PREFIX)} </tspan><tspan fill="{t["text_primary"]}">{esc(NODE_TITLE)}</tspan>
   </text>
-  {build_js_dot_matrix(t, 854, 19)}
+  {build_js_dot_matrix(t, 880, 20)}
 
   <!-- ==================== 2. LEFT COLUMN: SYSTEM 2x2 ==================== -->
-  <rect x="16" y="66" width="480" height="56" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  {corner_brackets(16, 66, 480, 56, t["bracket_color"], 7)}
-  <line x1="252" y1="66" x2="252" y2="122" stroke="{t["hairline_color"]}" stroke-width="1"/>
-  <line x1="16" y1="94" x2="496" y2="94" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <rect x="16" y="64" width="492" height="56" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  {corner_brackets(16, 64, 492, 56, t["bracket_color"], 7)}
+  <line x1="258" y1="64" x2="258" y2="120" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <line x1="16" y1="92" x2="508" y2="92" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
-  <text x="30" y="84" class="mono"><tspan class="label">OS // </tspan><tspan class="val">{esc(SYS_OS)}</tspan></text>
-  <text x="264" y="84" class="mono"><tspan class="label">DISCIPLINE // </tspan><tspan class="val">{esc(SYS_DISCIPLINE)}</tspan></text>
-  <text x="30" y="112" class="mono"><tspan class="label">KERNEL // </tspan><tspan class="val">{esc(SYS_KERNEL)}</tspan></text>
-  <text x="264" y="112" class="mono"><tspan class="label">IDE // </tspan><tspan class="val">{esc(SYS_IDE)}</tspan></text>
+  <text x="30" y="82" class="mono"><tspan class="label">OS // </tspan><tspan class="val">{esc(SYS_OS)}</tspan></text>
+  <text x="270" y="82" class="mono"><tspan class="label">DISCIPLINE // </tspan><tspan class="val">{esc(SYS_DISCIPLINE)}</tspan></text>
+  <text x="30" y="110" class="mono"><tspan class="label">KERNEL // </tspan><tspan class="val">{esc(SYS_KERNEL)}</tspan></text>
+  <text x="270" y="110" class="mono"><tspan class="label">IDE // </tspan><tspan class="val">{esc(SYS_IDE)}</tspan></text>
 
   <!-- ==================== 3. LEFT COLUMN: // DOSSIER ==================== -->
-  <rect x="16" y="132" width="480" height="202" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  <rect x="16.5" y="132.5" width="479" height="28.5" fill="{t["header_band_bg"]}"/>
-  {corner_brackets(16, 132, 480, 202, t["bracket_color"], 7)}
-  <text x="30" y="152" class="mono sec-title">// DOSSIER</text>
-  <line x1="16" y1="161" x2="496" y2="161" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <rect x="16" y="129" width="492" height="199" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  <rect x="16.5" y="129.5" width="491" height="27.5" fill="{t["header_band_bg"]}"/>
+  {corner_brackets(16, 129, 492, 199, t["bracket_color"], 7)}
+  <text x="30" y="148" class="mono sec-title">// DOSSIER</text>
+  <line x1="16" y1="157" x2="508" y2="157" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- Row 1: LANGUAGES -->
-  <text x="30" y="180" class="mono label">LANGUAGES</text>
-  <text x="148" y="180" class="mono val"><tspan fill="{t["heading_pink"]}" font-weight="700">&gt; </tspan><tspan fill="{t["text_muted"]}" font-size="12">PROG   </tspan><tspan>{esc(prog_str)}</tspan></text>
-  <text x="148" y="199" class="mono val"><tspan fill="{t["heading_pink"]}" font-weight="700">&gt; </tspan><tspan fill="{t["text_muted"]}" font-size="12">MARKUP </tspan><tspan>{esc(markup_str)}</tspan></text>
-  <line x1="16" y1="209" x2="496" y2="209" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <text x="30" y="176" class="mono label">LANGUAGES</text>
+  <text x="150" y="176" class="mono val"><tspan fill="{t["heading_pink"]}" font-weight="700">&gt; </tspan><tspan fill="{t["text_muted"]}" font-size="12">PROG   </tspan><tspan>{esc(prog_str)}</tspan></text>
+  <text x="150" y="195" class="mono val"><tspan fill="{t["heading_pink"]}" font-weight="700">&gt; </tspan><tspan fill="{t["text_muted"]}" font-size="12">MARKUP </tspan><tspan>{esc(markup_str)}</tspan></text>
+  <line x1="16" y1="205" x2="508" y2="205" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- Row 2: SPOKEN -->
-  <text x="30" y="229" class="mono label">SPOKEN</text>
-  <text x="148" y="229" class="mono val">{esc(spoken_str)}</text>
-  <line x1="16" y1="240" x2="496" y2="240" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <text x="30" y="225" class="mono label">SPOKEN</text>
+  <text x="150" y="225" class="mono val">{esc(spoken_str)}</text>
+  <line x1="16" y1="236" x2="508" y2="236" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- Row 3: UPTIME -->
-  <text x="30" y="260" class="mono label">UPTIME</text>
-  <text x="148" y="260" class="mono val">{esc(uptime_str)}</text>
-  <line x1="16" y1="271" x2="496" y2="271" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <text x="30" y="256" class="mono label">UPTIME</text>
+  <text x="150" y="256" class="mono val">{esc(uptime_str)}</text>
+  <line x1="16" y1="267" x2="508" y2="267" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- Row 4: FOCUS -->
-  <text x="30" y="291" class="mono label">FOCUS</text>
-  <text x="148" y="291" class="mono val">{esc(focus_str)}</text>
-  <line x1="16" y1="302" x2="496" y2="302" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <text x="30" y="287" class="mono label">FOCUS</text>
+  <text x="150" y="287" class="mono val">{esc(focus_str)}</text>
+  <line x1="16" y1="298" x2="508" y2="298" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- Row 5: PERSONAL -->
-  <text x="30" y="322" class="mono label">PERSONAL</text>
-  <text x="148" y="322" class="mono val">{esc(personal_str)}</text>
+  <text x="30" y="318" class="mono label">PERSONAL</text>
+  <text x="150" y="318" class="mono val">{esc(personal_str)}</text>
 
   <!-- ==================== 4. LEFT COLUMN: // TELEMETRY ==================== -->
-  <rect x="16" y="344" width="480" height="140" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  <rect x="16.5" y="344.5" width="479" height="28.5" fill="{t["header_band_bg"]}"/>
-  {corner_brackets(16, 344, 480, 140, t["bracket_color"], 7)}
-  <text x="30" y="364" class="mono sec-title">// TELEMETRY</text>
-  <line x1="16" y1="373" x2="496" y2="373" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <rect x="16" y="337" width="492" height="139" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  <rect x="16.5" y="337.5" width="491" height="27.5" fill="{t["header_band_bg"]}"/>
+  {corner_brackets(16, 337, 492, 139, t["bracket_color"], 7)}
+  <text x="30" y="356" class="mono sec-title">// TELEMETRY</text>
+  <line x1="16" y1="365" x2="508" y2="365" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
   <!-- 2x2 Telemetry Grid -->
-  <line x1="252" y1="373" x2="252" y2="457" stroke="{t["hairline_color"]}" stroke-width="1"/>
-  <line x1="16" y1="415" x2="496" y2="415" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <line x1="258" y1="365" x2="258" y2="449" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <line x1="16" y1="407" x2="508" y2="407" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
-  <text x="30" y="390" class="mono label">COMMITS</text>
-  <text x="30" y="409" class="mono stat-num">{esc(stats["commits"])}</text>
+  <text x="30" y="382" class="mono label">COMMITS</text>
+  <text x="30" y="401" class="mono stat-num">{esc(stats["commits"])}</text>
 
-  <text x="266" y="390" class="mono label">REPOS</text>
-  <text x="266" y="409" class="mono stat-num">{esc(stats["repos"])}</text>
+  <text x="272" y="382" class="mono label">REPOS</text>
+  <text x="272" y="401" class="mono stat-num">{esc(stats["repos"])}</text>
 
-  <text x="30" y="432" class="mono label">CONTRIB</text>
-  <text x="30" y="451" class="mono stat-num">{esc(stats["contrib"])}</text>
+  <text x="30" y="424" class="mono label">CONTRIB</text>
+  <text x="30" y="443" class="mono stat-num">{esc(stats["contrib"])}</text>
 
-  <text x="266" y="432" class="mono label">LINES OF CODE</text>
-  <text x="266" y="451" class="mono">
+  <text x="272" y="424" class="mono label">LINES OF CODE</text>
+  <text x="272" y="443" class="mono">
     <tspan class="stat-num" font-size="18.5">{esc(stats["loc_net"])} </tspan>
     <tspan fill="{t["loc_add"]}" font-size="11.5">({esc(stats["loc_add"])}</tspan>
     <tspan fill="{t["text_muted"]}" font-size="11.5"> / </tspan>
@@ -421,28 +419,28 @@ def build_svg(uptime_str: str, stats: dict, disc_uri: str, theme_name: str) -> s
   </text>
 
   <!-- Hatched LIVE Progress Bar -->
-  <line x1="16" y1="457" x2="496" y2="457" stroke="{t["hairline_color"]}" stroke-width="1"/>
-  <rect x="30" y="465" width="414" height="10" fill="{t["canvas_bg"]}" stroke="{t["accent_orange"]}" stroke-width="0.9"/>
-  <rect x="32" y="467" width="342" height="6" fill="url(#live-hatch-{theme_name})"/>
-  <text x="482" y="474" class="mono" fill="{t["accent_orange"]}" font-size="11" font-weight="700" text-anchor="end">LIVE</text>
+  <line x1="16" y1="449" x2="508" y2="449" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <rect x="30" y="457" width="426" height="10" fill="{t["canvas_bg"]}" stroke="{t["accent_orange"]}" stroke-width="0.9"/>
+  <rect x="32" y="459" width="352" height="6" fill="url(#live-hatch-{theme_name})"/>
+  <text x="494" y="466" class="mono" fill="{t["accent_orange"]}" font-size="11" font-weight="700" text-anchor="end">LIVE</text>
 
   <!-- ==================== 5. RIGHT COLUMN: 1:1 VINYL DISC STAGE ==================== -->
-  <rect x="508" y="66" width="436" height="418" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  {corner_brackets(508, 66, 436, 418, t["bracket_color"], 9)}
+  <rect x="520" y="64" width="449" height="412" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  {corner_brackets(520, 64, 449, 412, t["bracket_color"], 9)}
   {disc_layer}
 
   <!-- ==================== 6. BOTTOM FULL-WIDTH ROW: // COMMS ==================== -->
-  <rect x="16" y="494" width="928" height="34" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
-  <rect x="16.5" y="494.5" width="107.5" height="33" fill="{t["header_band_bg"]}"/>
-  {corner_brackets(16, 494, 928, 34, t["bracket_color"], 7)}
-  <line x1="124" y1="494" x2="124" y2="528" stroke="{t["hairline_color"]}" stroke-width="1"/>
-  <line x1="464" y1="494" x2="464" y2="528" stroke="{t["hairline_color"]}" stroke-width="1"/>
-  <line x1="704" y1="494" x2="704" y2="528" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <rect x="16" y="485" width="953" height="34" fill="{t["panel_bg"]}" stroke="{t["border_color"]}" stroke-width="1"/>
+  <rect x="16.5" y="485.5" width="107.5" height="33" fill="{t["header_band_bg"]}"/>
+  {corner_brackets(16, 485, 953, 34, t["bracket_color"], 7)}
+  <line x1="124" y1="485" x2="124" y2="519" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <line x1="478" y1="485" x2="478" y2="519" stroke="{t["hairline_color"]}" stroke-width="1"/>
+  <line x1="726" y1="485" x2="726" y2="519" stroke="{t["hairline_color"]}" stroke-width="1"/>
 
-  <text x="30" y="515" class="mono sec-title">// COMMS</text>
-  <text x="140" y="515" class="mono"><tspan class="label">MAIL // </tspan><tspan class="val">{esc(COMMS_EMAIL)}</tspan></text>
-  <text x="480" y="515" class="mono"><tspan class="label">GITHUB // </tspan><tspan class="val">{esc(COMMS_GITHUB)}</tspan></text>
-  <text x="720" y="515" class="mono"><tspan class="label">LINKEDIN // </tspan><tspan class="val">{esc(COMMS_LINKEDIN)}</tspan></text>
+  <text x="30" y="506" class="mono sec-title">// COMMS</text>
+  <text x="140" y="506" class="mono"><tspan class="label">MAIL // </tspan><tspan class="val">{esc(COMMS_EMAIL)}</tspan></text>
+  <text x="494" y="506" class="mono"><tspan class="label">GITHUB // </tspan><tspan class="val">{esc(COMMS_GITHUB)}</tspan></text>
+  <text x="742" y="506" class="mono"><tspan class="label">LINKEDIN // </tspan><tspan class="val">{esc(COMMS_LINKEDIN)}</tspan></text>
 </svg>
 """
 
