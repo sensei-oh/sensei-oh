@@ -182,7 +182,7 @@
   <line x1="16" y1="407" x2="508" y2="407" stroke="#e5e9f0" stroke-width="1"/>
 
   <text x="30" y="382" class="mono label">COMMITS</text>
-  <text x="30" y="401" class="mono stat-num">46</text>
+  <text x="30" y="401" class="mono stat-num">49</text>
 
   <text x="272" y="382" class="mono label">REPOS</text>
   <text x="272" y="401" class="mono stat-num">3</text>
@@ -193,9 +193,9 @@
   <text x="272" y="424" class="mono label">LINES OF CODE</text>
   <text x="272" y="443" class="mono">
     <tspan class="stat-num" font-size="18.5">3,936 </tspan>
-    <tspan fill="#1a7f37" font-size="11.5">(+5,784</tspan>
+    <tspan fill="#1a7f37" font-size="11.5">(+5,785</tspan>
     <tspan fill="#656d76" font-size="11.5"> / </tspan>
-    <tspan fill="#b85d78" font-size="11.5">-1,848)</tspan>
+    <tspan fill="#b85d78" font-size="11.5">-1,849)</tspan>
   </text>
 
   <!-- Hatched LIVE Progress Bar -->
