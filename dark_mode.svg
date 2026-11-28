@@ -182,7 +182,7 @@
   <line x1="16" y1="407" x2="508" y2="407" stroke="#242424" stroke-width="1"/>
 
   <text x="30" y="382" class="mono label">COMMITS</text>
-  <text x="30" y="401" class="mono stat-num">50</text>
+  <text x="30" y="401" class="mono stat-num">51</text>
 
   <text x="272" y="382" class="mono label">REPOS</text>
   <text x="272" y="401" class="mono stat-num">3</text>
